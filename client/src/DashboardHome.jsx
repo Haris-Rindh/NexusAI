@@ -3,8 +3,7 @@ import axios from 'axios';
 import { Sparkles, TrendingUp, Zap, ArrowRight, Activity, Calendar, Copy, Send } from 'lucide-react';
 import { useUser } from "@clerk/clerk-react";
 import toast from 'react-hot-toast';
-
-const API_URL = "http://localhost:3000";
+import { API_URL } from './config';
 
 const DashboardHome = ({ setActiveTab, onQuickStart }) => {
     const { user } = useUser();

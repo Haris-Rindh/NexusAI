@@ -4,9 +4,7 @@ import { Plus, X, BarChart2, Smile, Save, Loader2, Clock } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useUser } from "@clerk/clerk-react";
-
-// CHANGE IF DEPLOYED
-const API_URL = "http://localhost:3000";
+import { API_URL } from './config';
 
 const PollCreator = () => {
     const { user } = useUser();

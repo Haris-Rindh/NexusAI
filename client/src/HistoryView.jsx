@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useUser } from "@clerk/clerk-react";
 import { Search, Filter, Calendar, ExternalLink, Edit3, Trash2, X, Save, CheckCircle, AlertCircle, FileText, Send, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-const API_URL = "http://localhost:3000";
+import { API_URL } from './config';
 
 const HistoryView = () => {
   const { user } = useUser();

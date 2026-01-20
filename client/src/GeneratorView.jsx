@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Sparkles, Copy, Loader2, Send, Clock, Calendar, Image as ImageIcon, X, Check, Lightbulb, Edit2 } from 'lucide-react';
 import { useUser } from "@clerk/clerk-react";
 import toast from 'react-hot-toast';
+import { API_URL } from './config';
 
-const API_URL = "http://localhost:3000";
 
 const GeneratorView = ({ initialTopic }) => {
   const { user } = useUser();

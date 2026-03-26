@@ -1,16 +1,64 @@
-# React + Vite
+# 🚀 LinkedIn Content & Carousel Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A powerful SaaS application designed to help users generate, schedule, and publish high-quality LinkedIn content and carousels using AI.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠 Features
 
-## React Compiler
+### 🤖 AI-Powered Content Generation
+- **Smart Carousel Builder:** Generate seamless, multi-slide carousels with AI-driven copy and design logic.
+- **Post Generator:** Create engaging LinkedIn posts optimized for the current algorithm.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🔗 Smart LinkedIn Integration
+- **Conditional Actions:** - **Connected Users:** Can directly **Publish** or **Schedule** posts to their LinkedIn profile.
+  - **Unconnected Users:** Provided with **Copy Content** and **Download** options to manually share their creations.
+- **Persistent Connection:** A dedicated "Connect LinkedIn" flow that remains accessible even if skipped during onboarding.
 
-## Expanding the ESLint configuration
+### 📅 Scheduling & Automation
+- Directly queue posts for future dates with a built-in scheduling engine.
+- Real-time status updates for published content.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 💻 Tech Stack
+
+<table style="width:100%">
+  <tr>
+    <th>Frontend</th>
+    <th>Backend</th>
+    <th>Database</th>
+  </tr>
+  <tr>
+    <td>React.js</td>
+    <td>Node.js</td>
+    <td>MongoDB / PostgreSQL</td>
+  </tr>
+  <tr>
+    <td>Tailwind CSS</td>
+    <td>Express.js</td>
+    <td>Mongoose / Sequelize</td>
+  </tr>
+</table>
+
+---
+
+## ⚙️ Logic & State Management
+
+The application uses a strict **Connection State Logic** to handle user permissions:
+
+| User Status | Available Actions | UI Elements |
+| :--- | :--- | :--- |
+| **LinkedIn Linked** | Publish, Schedule, Edit | Success Toasts, API Triggers |
+| **Not Linked** | Copy to Clipboard, Download | "Connect Account" Prompt |
+
+> **Note:** The "Published" success message is strictly gated behind a verified LinkedIn API response to prevent false positives.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+```bash
+git clone [https://github.com/Haris-Rindh/NexusAI.git](https://github.com/Haris-Rindh/NexusAI.git)
+cd NexusAI

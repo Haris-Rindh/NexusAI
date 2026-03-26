@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { useUser } from "@clerk/clerk-react";
 import { API_URL } from './config';
 
-const PollCreator = () => {
+const PollCreator = ({ isGuestMode }) => {
     const { user } = useUser();
     const [question, setQuestion] = useState("What is your biggest challenge right now?");
     const [options, setOptions] = useState(["Finding Clients", "Time Management", "Technical Skills"]);
@@ -38,6 +38,7 @@ const PollCreator = () => {
 
     // --- NEW: SAVE FUNCTION ---
     const handleSave = async () => {
+        if (isGuestMode) return toast.error("Sign up to save or schedule polls!");
         setIsSaving(true);
         try {
             await axios.post(`${API_URL}/api/save`, {

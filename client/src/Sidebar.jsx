@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useClerk } from "@clerk/clerk-react";
 
-const Sidebar = ({ activeTab, setActiveTab }) => {
+const Sidebar = ({ activeTab, setActiveTab, isGuestMode, setIsGuestMode, dbUser }) => {
     const { signOut } = useClerk();
     const [isExpanded, setIsExpanded] = useState(true);
 
@@ -18,6 +18,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         { id: 'carousels', label: 'Carousel Builder', icon: Layers },
         { id: 'polls', label: 'Poll Creator', icon: ListChecks },
         { id: 'analyze', label: 'Analytics', icon: BarChart2 },
+        { id: 'pricing', label: 'Upgrade', icon: Zap },
     ];
 
     return (
@@ -29,7 +30,10 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 {/* Full Logo */}
                 <div className={`flex items-center gap-3 transition-all duration-300 ${isExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-0 w-0 overflow-hidden'}`}>
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20">N</div>
-                    <span className="text-xl font-bold text-white tracking-tight">Nexus AI</span>
+                    <div className="flex flex-col">
+                        <span className="text-xl font-bold text-white tracking-tight leading-tight">Nexus AI</span>
+                        {isGuestMode && <span className="text-[10px] uppercase font-bold text-orange-400 tracking-wider">Guest Mode</span>}
+                    </div>
                 </div>
 
                 {/* Collapsed Logo Icon */}
@@ -77,6 +81,22 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
             {/* FOOTER / SETTINGS */}
             <div className="p-4 border-t border-slate-800">
+                {/* Credits Indicator */}
+                {dbUser && dbUser.planTier === 'Free' && !isGuestMode && (
+                    <div className={`p-3 rounded-xl bg-blue-900/30 border border-blue-800/50 mb-4 ${!isExpanded && 'hidden'}`}>
+                        <div className="text-xs text-blue-300 font-bold mb-1">Credits Remaining</div>
+                        <div className="flex items-end gap-2">
+                             <span className="text-2xl font-extrabold text-white leading-none">{dbUser.creditsRemaining}</span>
+                             <span className="text-sm text-blue-400 font-medium pb-0.5">/ 3</span>
+                        </div>
+                        <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                             <div className="bg-blue-500 h-full rounded-full transition-all" style={{ width: `${(dbUser.creditsRemaining / 3) * 100}%` }}></div>
+                        </div>
+                        {dbUser.creditsRemaining <= 0 && (
+                             <button onClick={() => setActiveTab('pricing')} className="w-full mt-3 py-1.5 bg-yellow-500 text-yellow-900 text-xs font-bold rounded hover:bg-yellow-400">Upgrade to Pro</button>
+                        )}
+                    </div>
+                )}
 
                 {/* Settings Button */}
                 <button
@@ -90,12 +110,12 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
                 {/* Logout Button */}
                 <button
-                    onClick={() => signOut()}
+                    onClick={() => isGuestMode ? setIsGuestMode(false) : signOut()}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:bg-red-900/20 hover:text-red-500 transition-all mt-1 group relative ${!isExpanded && 'justify-center'}`}
                 >
                     <LogOut className="w-5 h-5" />
-                    <span className={`${isExpanded ? 'block' : 'hidden'}`}>Logout</span>
-                    {!isExpanded && <div className="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 z-50">Logout</div>}
+                    <span className={`${isExpanded ? 'block' : 'hidden'}`}>{isGuestMode ? 'Exit Guest Mode' : 'Logout'}</span>
+                    {!isExpanded && <div className="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 z-50">{isGuestMode ? 'Exit' : 'Logout'}</div>}
                 </button>
             </div>
         </div>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Sparkles, Copy, Loader2, Send, Clock, Calendar, Image as ImageIcon, X, Check, Lightbulb, Edit2 } from 'lucide-react';
+import { Sparkles, Copy, Loader2, Send, Clock, Calendar, Image as ImageIcon, X, Check, Lightbulb, Edit2, Download } from 'lucide-react';
 import { useUser } from "@clerk/clerk-react";
 import toast from 'react-hot-toast';
-import { API_URL } from './config';
 
+const API_URL = "http://localhost:3000";
 
-const GeneratorView = ({ initialTopic }) => {
+const GeneratorView = ({ initialTopic, isGuestMode, onGenerateSuccess, hasLinkedIn }) => {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   
@@ -30,6 +30,7 @@ const GeneratorView = ({ initialTopic }) => {
   useEffect(() => { if (initialTopic) setTopic(initialTopic); }, [initialTopic]);
 
   const handleSuggestTopic = async () => {
+    if (isGuestMode) return toast.error("Sign up to get topic inspiration!");
     setSuggesting(true);
     try {
       const res = await axios.get(`${API_URL}/api/suggest-topic`);
@@ -40,14 +41,18 @@ const GeneratorView = ({ initialTopic }) => {
   };
 
   const handleGenerate = async () => {
+    if (isGuestMode) return toast.error("Sign up to generate posts!");
     if (!topic.trim()) return toast.error("Enter a topic!");
     setLoading(true);
     setSuggestions([]);
     try {
       const res = await axios.post(`${API_URL}/api/generate`, { userId: user.id, topic, options });
       setSuggestions(res.data.data);
+      if (onGenerateSuccess) onGenerateSuccess();
       toast.success("Ideas generated!");
-    } catch (e) { toast.error("Generation failed"); } 
+    } catch (e) { 
+      toast.error(e.response?.data?.error || "Generation failed"); 
+    } 
     finally { setLoading(false); }
   };
 
@@ -75,6 +80,7 @@ const GeneratorView = ({ initialTopic }) => {
   };
 
   const handleFileChange = async (e) => {
+    if (isGuestMode) return toast.error("Sign up to upload images!");
     const file = e.target.files[0];
     if (file && uploadingPostId) {
       if (file.size > 2 * 1024 * 1024) return toast.error("Image too large (Max 2MB)");
@@ -82,7 +88,9 @@ const GeneratorView = ({ initialTopic }) => {
         const base64 = await convertToBase64(file);
         setSuggestions(prev => prev.map(p => p.id === uploadingPostId ? { ...p, image: base64 } : p));
         toast.success("Image attached");
-      } catch (err) { toast.error("Upload failed"); }
+      } catch (err) { 
+        toast.error("Upload failed"); 
+      }
     }
     setUploadingPostId(null);
     e.target.value = null;
@@ -101,6 +109,7 @@ const GeneratorView = ({ initialTopic }) => {
   };
 
   const handleSave = async (post, status = 'draft', date = null) => {
+    if (isGuestMode) return toast.error("Sign up to save or publish!");
     try {
       await axios.post(`${API_URL}/api/save`, {
         userId: user.id, topic: topic || "Untitled", 
@@ -117,6 +126,17 @@ const GeneratorView = ({ initialTopic }) => {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
     toast.success("Copied to clipboard");
+  };
+
+  const handleDownloadText = (post) => {
+    const element = document.createElement("a");
+    const file = new Blob([post.content], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = `nexus_post_${post.id}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    toast.success("Downloaded as TXT");
   };
 
   return (
@@ -210,8 +230,17 @@ const GeneratorView = ({ initialTopic }) => {
             </div>
             
             <div className="flex gap-3 mt-auto pt-4 border-t border-slate-50">
-               <button onClick={() => handleSave(post, 'published')} className="flex-1 py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700 flex justify-center gap-2 transition"><Send className="w-4 h-4" /> Publish</button>
-               <button onClick={() => {setSelectedPost(post); setShowScheduleModal(true)}} className="flex-1 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 flex justify-center gap-2 transition"><Clock className="w-4 h-4" /> Schedule</button>
+               {hasLinkedIn ? (
+                 <>
+                   <button onClick={() => handleSave(post, 'published')} className="flex-1 py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700 flex justify-center gap-2 transition"><Send className="w-4 h-4" /> Publish</button>
+                   <button onClick={() => {setSelectedPost(post); setShowScheduleModal(true)}} className="flex-1 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 flex justify-center gap-2 transition"><Clock className="w-4 h-4" /> Schedule</button>
+                 </>
+               ) : (
+                 <>
+                   <button onClick={() => handleCopy(editedContent || post.content, `btn_${post.id}`)} className="flex-1 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-bold hover:bg-blue-100 flex justify-center gap-2 transition"><Copy className="w-4 h-4" /> Copy Content</button>
+                   <button onClick={() => handleDownloadText(post)} className="flex-1 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 flex justify-center gap-2 transition"><Download className="w-4 h-4" /> Download</button>
+                 </>
+               )}
             </div>
           </div>
         ))}

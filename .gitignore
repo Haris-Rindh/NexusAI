@@ -1,4 +1,17 @@
-node_modules/
+# Secrets and Environment Variables
 .env
+server/.env
+client/.env
+
+# Dependencies
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Build folders
 dist/
+build/
+
+# IDE/System files
 .DS_Store
+.vscode/

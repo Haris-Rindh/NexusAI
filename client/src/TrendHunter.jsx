@@ -13,7 +13,7 @@ const TrendHunter = ({ onUseTrend }) => {
 
   const fetchTrends = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/trends');
+      const res = await axios.get(`${API_URL}/api/trends`);
       setTrends(res.data.data);
     } catch (e) {
       console.error(e);
